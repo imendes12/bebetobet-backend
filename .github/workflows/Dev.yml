@@ -1,0 +1,27 @@
+name: Dev
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./compose.yaml"
+          down-flags: "--volumes"
+
+      - name: Composer Install
+        run: docker exec bebetobet-backend-app composer install
+
+      - name: Execute tests (Unit and Application tests) via PHPUnit
+        run: docker exec bebetobet-backend-app php bin/phpunit
